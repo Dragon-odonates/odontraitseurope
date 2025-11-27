@@ -258,3 +258,4 @@ ggsave(file.path(fig_folder, "spp_trait_coverage.png"),
        width = 30, height = 22, units = "cm", dpi = 300)
 ```
 
+
