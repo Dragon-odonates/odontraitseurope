@@ -1,0 +1,118 @@
+---
+title: "Plot traits"
+format: html
+editor: source
+embed-resources: true
+number-sections: true
+---
+
+```{r}
+#| output: false
+#| warning: false
+#| code-fold: true
+
+# Load all packages listed in DESCRIPTION
+devtools::install_deps(upgrade = "never")
+devtools::load_all()
+```
+
+```{r}
+# Get read/write folders
+read_folder <- here::here("data")
+fig_folder <- here::here("figures")
+```
+
+## Read data
+
+First, we read data from the sheets of an Excel file.
+
+```{r}
+datlist <- list()
+
+# Read the following sheets only
+sheets <- 2:6
+i <- 1
+for(s in sheets) {
+  dat <- readxl::read_excel(file.path(read_folder,
+                                      "OdonTraits_Europe.xlsx"),
+                            na = c("NA", "Unknown", "Data Deficient (DD)"),
+                            sheet = s)
+  datlist[[i]] <- dat
+  i <- i + 1
+}
+# Rename list elements
+names(datlist) <- c("protection_endemism",
+                    "imago", "larvae_exuviae", 
+                    "ecological", "conservation")
+```
+
+The next step is to merge sheets in a single table.
+```{r}
+# List to dataframe
+df <- Reduce(function(...) merge(..., by = 'species_name', 
+                                 all.x = TRUE), datlist)
+```
+
+## Format data
+
+Replace "missing" Red List criteria with "-" when it means species were assessed but not threatened:
+```{r} 
+df$redlist_2024_criteria[is.na(df$redlist_2024_criteria) & !is.na(df$redlist_2024_category)] <- "-"
+
+df$eu27_redlist_criteria[is.na(df$eu27_redlist_criteria) & !is.na(df$eu27_redlist_category)] <- "-"
+```
+
+Remove the "source" columns: 
+```{r}
+df <- df[, grep("_source", colnames(df), invert = TRUE)]
+```
+
+## Plot
+
+Below we prepare data for the plot:
+```{r}
+# Get only traits
+traits_df <- df[, 2:ncol(df)]
+
+# Get coverage for each trait
+traits_coverage <- apply(traits_df, 2, 
+                         function(x) sum(!is.na(x))/nrow(traits_df)*100)
+
+traits_coverage_df <- data.frame(trait = names(traits_coverage),
+                                 coverage = traits_coverage)
+
+# Get traits categories
+traits_categories <- lapply(datlist, colnames)
+traits_categories_df <- stack(traits_categories)
+colnames(traits_categories_df) <- c("trait", "category")
+
+# Convert to data.table for merge
+traits_coverage_df <- data.table::as.data.table(traits_coverage_df)
+traits_categories_df <- data.table::as.data.table(traits_categories_df)
+
+# Merge
+traits_coverage_df <- traits_categories_df[traits_coverage_df,
+                                           on = "trait"]
+```
+
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+#| code-fold: true
+
+ggplot(traits_coverage_df,
+       aes(y = reorder(trait, coverage), 
+               x = coverage)) +
+  geom_col() +
+  geom_text(aes(label = paste(round(coverage, 1), "%")), 
+            hjust = 1.1, col = "white") +
+  facet_wrap(facets = vars(category), scales = "free") +
+  theme_bw() +
+  xlab("Trait coverage (%)") +
+  theme(axis.title.y = element_blank())
+
+ggsave(file.path(fig_folder, "trait_coverage.png"), 
+       width = 30, height = 15, units = "cm", dpi = 300)
+```
+
