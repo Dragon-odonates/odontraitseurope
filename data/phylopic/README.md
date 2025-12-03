@@ -1,0 +1,2 @@
+# Attribution
+Organism silhouettes are from PhyloPic (https://www.phylopic.org/; T. Michael Keesey, 2023) and were added using the rphylopic R package ver. 1.6.0 (Gearty & Jones, 2023). Silhouettes were made by Andy Wilson, 2022 (CC0 1.0), Lisa Nicvert, 2023 (CC0 1.0), Wouter Koch, 2022 (CC0 1.0), Gareth Monger, 2013 (CC BY 3.0), Ivar Leidus, 2024 (CC BY 4.0), and Maxime Dahirel, 2018 (CC BY 3.0). Silhouettes were contributed by Andy Wilson, Lisa Nicvert, Wouter Koch, Gareth Monger, Pascal Abel, and Maxime Dahirel.

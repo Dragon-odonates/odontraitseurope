@@ -184,20 +184,28 @@ family2 <- levels(traits_coverage_sp_df$family2)
 df_img <- data.table(family2)
 
 df_img[, uuid := c("6c95d27a-ce71-43b0-a42c-6acab75a9967", # Libellulidae
-                   "5697a74a-cc00-46f8-a910-23c1f7ba4be4", # Coenagrionidae
+                   "516df51a-adc7-4cfc-86b9-9954698bd5ed", # Coenagrionidae
                    "36543d34-f5d6-48a1-818f-eca72bfe1a19", # Aeshnidae
-                   "0daa72e2-17e4-4597-aa0a-5665d1a5c1e5", # Gomphidae -> to replace
+                   "ba61ce1b-b940-433b-a573-5e338ca4ef87", # Gomphidae
                    "ce57b692-e1e0-468e-a025-8c10ceebca22", # Corduliidae
                    "f171f690-d5b3-4cf0-a8a3-8d615abcad34", # Lestidae
-                   "0daa72e2-17e4-4597-aa0a-5665d1a5c1e5", # Cordulegastridae -> to replace
+                   "f9f40ed4-c092-4456-aade-acf36174dfdd", # Cordulegastridae
                    "8af9c80d-92f9-4ba8-87c0-8ffa026c770c", # Calopterygidae
-                   "0daa72e2-17e4-4597-aa0a-5665d1a5c1e5", # Platycnemididae -> to replace
-                   "0daa72e2-17e4-4597-aa0a-5665d1a5c1e5" # Other spp -> to replace
+                   "371dccbd-688f-462c-b337-a5c17561158b", # Platycnemididae
+                   "546c0612-c80c-4f61-bcd1-93eabbc5eda0" # Other spp -> Macromia splendens
                    )]
 
-# # Get Phylopic images
+# Get Phylopic images
 img <- lapply(df_img$uuid, rphylopic::get_phylopic,
-              format = "raster")
+              format = "vector")
+
+# Get attribution
+attribution <- rphylopic::get_attribution(uuid = df_img$uuid,
+                                          text = TRUE)
+attribution$text <- paste("# Attribution", attribution$text, sep = "\n")
+# Write to file
+writeLines(attribution$text, 
+           con = file(here::here("data", "phylopic", "README.md")))
 
 # Get filenames
 filenames <- here::here("data", 
@@ -205,8 +213,13 @@ filenames <- here::here("data",
                         paste0(df_img$family2, ".png"))
 res <- lapply(seq_along(img),
        function(i) {
-         png::writePNG(img[[i]], 
-                       target = filenames[i])
+         png(filenames[i], 
+             width = 500, 
+             height = 400, bg = NA)
+         plot(img[[i]])
+         dev.off()
+         # png::writePNG(img[[i]], asp = 1,
+         #               target = filenames[i])
          invisible(NULL)
        })
 
@@ -215,9 +228,10 @@ res <- lapply(seq_along(img),
 df_img[, filename := filenames]
 
 # Get Markdown text
-h <- 10
-df_img[, img := paste0(family2, 
-                       " <img src = '", filename, "' height='", h, "'/>")]
+h <- 15
+df_img[, img := paste0("<span>", family2, " </span>",
+                       "<img src = '",
+                       filename, "' height='", h, "'/>")]
 ```
 
 
@@ -227,8 +241,8 @@ df_img[, img := paste0(family2,
 #| code-fold: true
 
 # Create labeller for corresponding Markdown code and families
-labeller <- df_img$img 
-names(labeller) <- df_img$family2 
+labeller <- df_img$img
+names(labeller) <- df_img$family2
 
 g1 <- ggplot(subset(traits_coverage_sp_df, col == 1))
 g2 <- ggplot(subset(traits_coverage_sp_df, col == 2))
