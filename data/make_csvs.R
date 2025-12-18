@@ -1,4 +1,5 @@
 library(readxl)
+library(dplyr)
 
 # Path to the Excel file
 file_path <- "data/20251212-OdonTraits_Europe.xlsx"
@@ -14,6 +15,7 @@ for (s in sheets) {
   
   # Read sheet
   df <- read_excel(file_path, sheet = s)
+  df <- select(df, -ends_with("_source"))
   
   # Clean name for use both as object name and as filename
   clean_name <- gsub("[^A-Za-z0-9_]", "_", s)
