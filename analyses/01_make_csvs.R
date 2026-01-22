@@ -1,23 +1,22 @@
-library(readxl)
-library(dplyr)
-
-library(here)
+# Load all packages listed in DESCRIPTION
+devtools::install_deps(upgrade = "never")
+devtools::load_all()
 
 # Path to the Excel file
-file_path <- here("data", "20251212-OdonTraits_Europe.xlsx")
+file_path <- here::here("data", "20251212-OdonTraits_Europe.xlsx")
 
 # Specify output folder
-output_dir <- here("data", "csv-files/")
+output_dir <- here::here("data", "csv-files/")
 
 # Get sheet names
-sheets <- excel_sheets(file_path)
+sheets <- readxl::excel_sheets(file_path)
 
 # Loop through sheets and export each as CSV + save object to environment
 for (s in sheets) {
   
   # Read sheet
-  df <- read_excel(file_path, sheet = s)
-  df <- select(df, -ends_with("_source"))
+  df <- readxl::read_excel(file_path, sheet = s)
+  df <- dplyr::select(df, -ends_with("_source"))
   
   # Clean name for use both as object name and as filename
   clean_name <- gsub("[^A-Za-z0-9_]", "_", s)
