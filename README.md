@@ -28,7 +28,7 @@ devtools::load_all()
 ## License
 
 The code is released under the [MIT license](LICENSE.md). 
-The [data](https://doi.org/10.5281/zenodo.17248816) are released on Zenodo under a CC-BY license.
+The [data](https://doi.org/10.5281/zenodo.17248816) are released on Zenodo under a [CC-BY license](https://creativecommons.org/licenses/by/4.0/).
 
 ## References
 De Knijf, G., Bried, J., Engel, T., Jeanmougin, M., Fontaine, C., Schmucki, R. & Nicvert, L. OdonTraits Europe. A comprehensive traits dataset for European dragonflies and damselflies. (in prep.).
