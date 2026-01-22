@@ -1,4 +1,4 @@
-# Format and view OdonTraits Europe
+# Code for OdonTraits Europe
 
 This repository contains code to format and plot data for the following data paper:
 
