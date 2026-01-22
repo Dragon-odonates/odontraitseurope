@@ -18,39 +18,40 @@ devtools::load_all()
 
 ```{r}
 # Get read/write folders
-read_folder <- here::here("data")
+read_folder <- here::here("data", "csv-files")
 fig_folder <- here::here("figures")
 ```
 
 ## Read data
 
-First, we read data from the sheets of an Excel file.
+First, we read data from the OdonTraits database.
 
 ```{r}
 datlist <- list()
 
-# Read the following sheets only
-sheets <- 2:6
-i <- 1
-for(s in sheets) {
-  dat <- readxl::read_excel(file.path(read_folder,
-                                      "OdonTraits_Europe.xlsx"),
-                            na = c("NA", "Unknown", "Data Deficient (DD)"),
-                            sheet = s)
-  datlist[[i]] <- dat
-  i <- i + 1
-}
-# Rename list elements
-names(datlist) <- c("protection_endemism",
-                    "imago", "larvae_exuviae", 
-                    "ecological", "conservation")
+# List files names
+files <- list.files(read_folder)
+# Omit column metadata and species taxonomy
+files <- files[!(files %in% c("column_description.csv", 
+                              "sources.csv",
+                              "taxonomic.csv"))]
 
-taxo <- readxl::read_excel(file.path(read_folder,
-                                      "OdonTraits_Europe.xlsx"),
-                           sheet = 1)
+# Read files
+for(i in seq_along(files)) {
+  dat <- read.csv(file.path(read_folder, files[i]), 
+                  sep = ",")
+  datlist[[i]] <- dat
+}
+
+datnames <- gsub(files, pattern = "\\.csv$", replacement = "")
+names(datlist) <- datnames
+
+# Read taxonomy
+taxo <- read.csv(file.path(read_folder, "taxonomic.csv"), sep = ",")
 ```
 
-The next step is to merge sheets in a single table.
+The next step is to merge tables.
+
 ```{r}
 # List to dataframe
 df <- Reduce(function(...) merge(..., by = 'species_name', 
@@ -66,16 +67,11 @@ df$redlist_2024_criteria[is.na(df$redlist_2024_criteria) & !is.na(df$redlist_202
 df$eu27_redlist_2024_criteria[is.na(df$eu27_redlist_2024_criteria) & !is.na(df$eu27_redlist_2024_category)] <- "-"
 ```
 
-Remove the "source" columns: 
-```{r}
-df <- df[, grep("_source", colnames(df), invert = TRUE)]
-```
-
 ## Plot
 
 Below we prepare data for the plot:
 ```{r}
-# Get only traits
+# Get only traits (remove species name)
 traits_df <- df[, 2:ncol(df)]
 
 # Get coverage for each trait
@@ -100,7 +96,7 @@ traits_coverage_df <- traits_categories_df[traits_coverage_df,
 
 # Change the order of trait categories
 traits_coverage_df[, category := factor(category,
-                                        levels = c("imago", "larvae_exuviae", "ecological",
+                                        levels = c("imago", "larvae_exuvia", "ecological",
                                                    "protection_endemism", "conservation"))]
 ```
 
@@ -112,7 +108,7 @@ traits_coverage_df[, category := factor(category,
 
 labeller <- c("protection_endemism" = "Protection and endemism",
               "imago" = "Imago morphology",
-              "larvae_exuviae" = "Larvae/exuviae morphology",
+              "larvae_exuvia" = "Larvae/exuviae morphology",
               "ecological" = "Ecological traits",
               "conservation" = "Conservation")
 
@@ -244,19 +240,35 @@ df_img[, img := paste0("<span>", family2, " </span>",
 labeller <- df_img$img
 names(labeller) <- df_img$family2
 
-g1 <- ggplot(subset(traits_coverage_sp_df, col == 1))
-g2 <- ggplot(subset(traits_coverage_sp_df, col == 2))
-g3 <- ggplot(subset(traits_coverage_sp_df, col == 3))
-
-g1 + g2 + g3 +
-  patchwork::plot_layout(axes = "collect") &
+# Base plots
+g1 <- ggplot(subset(traits_coverage_sp_df, col == 1)) +
   geom_col(aes(y = reorder(species_name, coverage), 
-               x = coverage)) &
+               x = coverage)) +
   geom_text(aes(y = reorder(species_name, coverage),
                 x = coverage,
                 label = paste(round(coverage, 1), "%")),
-            size = 2.5,
-            hjust = 1.1, col = "white") &
+  size = 2.5,
+  hjust = 1.1, col = "white")
+
+g2 <- ggplot(subset(traits_coverage_sp_df, col == 2)) +
+  geom_col(aes(y = reorder(species_name, coverage), 
+               x = coverage)) +
+  geom_text(aes(y = reorder(species_name, coverage),
+                x = coverage,
+                label = paste(round(coverage, 1), "%")),
+  size = 2.5,
+  hjust = 1.1, col = "white")
+g3 <- ggplot(subset(traits_coverage_sp_df, col == 3)) +
+  geom_col(aes(y = reorder(species_name, coverage), 
+               x = coverage)) +
+  geom_text(aes(y = reorder(species_name, coverage),
+                x = coverage,
+                label = paste(round(coverage, 1), "%")),
+  size = 2.5,
+  hjust = 1.1, col = "white")
+
+g1 + g2 + g3 +
+  patchwork::plot_layout(axes = "collect") &
   ggforce::facet_col(facets = vars(family2),
                      labeller = as_labeller(labeller),
                      scales = "free_y",
@@ -269,6 +281,6 @@ g1 + g2 + g3 +
         axis.text.y = element_text(face = "italic"))
 
 ggsave(file.path(fig_folder, "spp_trait_coverage.png"),
-       width = 30, height = 22, units = "cm", dpi = 300)
+       width = 30, height = 24, units = "cm", dpi = 300)
 ```
 
