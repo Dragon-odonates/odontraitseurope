@@ -240,35 +240,26 @@ df_img[, img := paste0("<span>", family2, " </span>",
 labeller <- df_img$img
 names(labeller) <- df_img$family2
 
+# Reorder species by coverage within each column 
+# (break ties with alphabetical order)
+data.table::setorder(traits_coverage_sp_df, 
+                     col, coverage, -species_name)
+traits_coverage_sp_df[, species_name := factor(species_name,
+                                               levels = species_name)]
 # Base plots
-g1 <- ggplot(subset(traits_coverage_sp_df, col == 1)) +
-  geom_col(aes(y = reorder(species_name, coverage), 
-               x = coverage)) +
-  geom_text(aes(y = reorder(species_name, coverage),
-                x = coverage,
-                label = paste(round(coverage, 1), "%")),
-  size = 2.5,
-  hjust = 1.1, col = "white")
+g1 <- ggplot(subset(traits_coverage_sp_df, col == 1))
+g2 <- ggplot(subset(traits_coverage_sp_df, col == 2))
+g3 <- ggplot(subset(traits_coverage_sp_df, col == 3))
 
-g2 <- ggplot(subset(traits_coverage_sp_df, col == 2)) +
-  geom_col(aes(y = reorder(species_name, coverage), 
-               x = coverage)) +
-  geom_text(aes(y = reorder(species_name, coverage),
-                x = coverage,
-                label = paste(round(coverage, 1), "%")),
-  size = 2.5,
-  hjust = 1.1, col = "white")
-g3 <- ggplot(subset(traits_coverage_sp_df, col == 3)) +
-  geom_col(aes(y = reorder(species_name, coverage), 
-               x = coverage)) +
-  geom_text(aes(y = reorder(species_name, coverage),
-                x = coverage,
-                label = paste(round(coverage, 1), "%")),
-  size = 2.5,
-  hjust = 1.1, col = "white")
-
-g1 + g2 + g3 +
+(g1 + g2 + g3) &
   patchwork::plot_layout(axes = "collect") &
+  geom_col(aes(y = species_name, 
+               x = coverage)) &
+  geom_text(aes(y = species_name,
+                x = coverage,
+                label = paste(round(coverage, 1), "%")),
+  size = 2.5,
+  hjust = 1.1, col = "white") &
   ggforce::facet_col(facets = vars(family2),
                      labeller = as_labeller(labeller),
                      scales = "free_y",
