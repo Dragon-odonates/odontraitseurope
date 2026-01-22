@@ -1,11 +1,13 @@
 library(readxl)
 library(dplyr)
 
+library(here)
+
 # Path to the Excel file
-file_path <- "data/20251212-OdonTraits_Europe.xlsx"
+file_path <- here("data", "20251212-OdonTraits_Europe.xlsx")
 
 # Specify output folder
-output_dir <- "data/csv-files/"   
+output_dir <- here("data", "csv-files/")
 
 # Get sheet names
 sheets <- excel_sheets(file_path)
