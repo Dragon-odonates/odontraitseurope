@@ -6,7 +6,7 @@ devtools::load_all()
 file_path <- here::here("data", "20251212-OdonTraits_Europe.xlsx")
 
 # Specify output folder
-output_dir <- here::here("data", "csv-files/")
+output_dir <- here::here("data", "csv-files/revision/")
 
 # Get sheet names
 sheets <- readxl::excel_sheets(file_path)
@@ -16,7 +16,7 @@ for (s in sheets) {
   
   # Read sheet
   df <- readxl::read_excel(file_path, sheet = s)
-  df <- dplyr::select(df, -ends_with("_source"))
+  #df <- dplyr::select(df, -ends_with("_source"))
   
   # Clean name for use both as object name and as filename
   clean_name <- gsub("[^A-Za-z0-9_]", "_", s)
