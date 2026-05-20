@@ -19,19 +19,19 @@ This repository contains code to format and plot data for the following data pap
 
 `data/csv-files` contains the following files:
 
-- imago.csv: morphological traits related to imago stage
-- larvae_exuvia.csvcsv: morphological traits related to larva or exuvia stage
-- ecological.csv: traits related to species ecology
-- protection_endemism.csv: traits related to protection and endemism
-- conservation.csv: traits related to conservation status
-- taxonomic.csv: taxonomic information for species
-- sources.csv: sources table for each species and trait
-- references.csv: complete reference for the sources
-- column_description.csv: description of each column from thez previous tables
-
-For more information, refer to the dataset published on Zenodo or the complete publication.
+- `imago.csv`: morphological traits related to imago stage
+- `larvae_exuvia.csv`: morphological traits related to larva or exuvia stage
+- `ecological.csv`: traits related to species ecology
+- `protection_endemism.csv`: traits related to protection and endemism
+- `conservation.csv`: traits related to conservation status
+- `taxonomic.csv`: taxonomic information for species
+- `sources.csv`: sources table for each species and trait
+- `references.csv`: complete reference for the sources
+- `column_description.csv`: description of each column from thez previous tables
 
 Missing values are coded as "NA".
+
+For more information, refer to the dataset published on Zenodo or the complete publication.
 
 ## Installation
 
