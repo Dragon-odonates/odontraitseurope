@@ -11,7 +11,7 @@ This repository contains code to format and plot data for the following data pap
     -   `02_plot_traits.qmd` plots the two figures for trait coverage from the data paper (`02_plot_traits.html` shows the result of this analysis).
 -   `data/` contains:
     -   a copy of the OdonTraits Europe database (De Knijf et al., 2026) (in `csv-files/`)
-    -   trait data in Excel format (`20251212-OdonTraits_Europe.xlsx`)
+    -   trait data in Excel format (`OdonTraits_Europe.xlsx`)
     -   silhouettes images downloaded from Phylopic (in `phylopic/`; see attribution in subfolder).
 -   `figures/` contains figures produced with the analyses.
 
