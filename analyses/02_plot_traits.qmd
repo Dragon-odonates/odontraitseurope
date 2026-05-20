@@ -34,6 +34,7 @@ files <- list.files(read_folder)
 # Omit column metadata and species taxonomy
 files <- files[!(files %in% c("column_description.csv", 
                               "sources.csv",
+                              "references.csv",
                               "taxonomic.csv"))]
 
 # Read files
