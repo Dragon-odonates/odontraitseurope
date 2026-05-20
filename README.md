@@ -27,7 +27,7 @@ This repository contains code to format and plot data for the following data pap
 - `taxonomic.csv`: taxonomic information for species
 - `sources.csv`: sources table for each species and trait
 - `references.csv`: complete reference for the sources
-- `column_description.csv`: description of each column from thez previous tables
+- `column_description.csv`: description of each column from the previous tables
 
 Missing values are coded as "NA".
 
